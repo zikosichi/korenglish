@@ -74,7 +74,7 @@ export function LanguageLearningAppComponent() {
         if (stopPlayingRef.current) break
         await new Promise(resolve => setTimeout(resolve, 500))
         if (stopPlayingRef.current) break
-        await playAudio('ka', wordsToLearn[wordIndex].id)
+        await playAudio('ka', wordsToLearn[wordIndex].id, wordsToLearn[wordIndex].georgian)
         if (stopPlayingRef.current) break
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
