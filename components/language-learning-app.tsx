@@ -118,7 +118,7 @@ export function LanguageLearningAppComponent() {
       <div className="fixed top-0 left-0 right-0 bg-background z-10 p-4 shadow-md">
         <div className="container mx-auto">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Language Learning App</h1>
+            <h1 className="text-2xl font-bold">KorEnglish</h1>
             <Button onClick={isPlaying ? stopPlaying : playWords}>
               {isPlaying ? (
                 <>
@@ -146,17 +146,17 @@ export function LanguageLearningAppComponent() {
               {wordsToLearn.map((word, index) => (
                 <li 
                   key={word.id} 
-                  className={`flex justify-between items-center p-2 rounded ${index === currentWordIndex ? 'bg-primary/20' : ''}`}
+                  className={`flex items-center p-2 rounded-lg ${index === currentWordIndex ? 'bg-indigo-500/20 border-indigo-500 border-2' : ''}`}
                 >
-                  <span>{word.english} - {word.georgian}</span>
-                  <div className="flex items-center space-x-2">
-                    <Button size="icon" variant="ghost" onClick={() => playIndividualWord(word.id, 'en')}>
-                      <VolumeIcon className="w-4 h-4 text-blue-500" />
-                    </Button>
-                    <Button size="icon" variant="ghost" onClick={() => playIndividualWord(word.id, 'ka')}>
-                      <VolumeIcon className="w-4 h-4 text-red-500" />
-                    </Button>
-                    <Button size="sm" onClick={() => markAsLearned(word.id)}>
+                  <Button className='p-2' variant="ghost" onClick={() => playIndividualWord(word.id, 'en')}>
+                    {word.english}
+                  </Button>
+                  -
+                  <Button className='p-2'variant="ghost" onClick={() => playIndividualWord(word.id, 'ka')}>
+                    {word.georgian}
+                  </Button>
+                  <div className="flex items-center space-x-2 ml-auto">
+                    <Button variant="outline" onClick={() => markAsLearned(word.id)}>
                       <CheckIcon className="w-4 h-4 mr-2" />
                       I learned it
                     </Button>
