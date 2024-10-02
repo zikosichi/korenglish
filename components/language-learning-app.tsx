@@ -22,14 +22,29 @@ export function LanguageLearningAppComponent() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    const savedWordsToLearn = localStorage.getItem('wordsToLearn')
-    const savedLearnedWords = localStorage.getItem('learnedWords')
-    
-    setWordsToLearn(savedWordsToLearn && JSON.parse(savedWordsToLearn).length > 0 
-      ? JSON.parse(savedWordsToLearn) 
-      : words)
-    setLearnedWords(savedLearnedWords ? JSON.parse(savedLearnedWords) : [])
-    
+    const currentAppVersion = '1.1.0'; // Your new app version
+    const storedVersion = localStorage.getItem('appVersion');
+
+    if (storedVersion !== currentAppVersion) {
+      // If versions are different, clear the local storage
+      localStorage.clear();
+      // Update the stored version to the current one
+      localStorage.setItem('appVersion', currentAppVersion);
+      
+      // Set initial state to default values
+      setWordsToLearn(words)
+      setLearnedWords([])
+    } else {
+      // Load data from local storage as before
+      const savedWordsToLearn = localStorage.getItem('wordsToLearn')
+      const savedLearnedWords = localStorage.getItem('learnedWords')
+      
+      setWordsToLearn(savedWordsToLearn && JSON.parse(savedWordsToLearn).length > 0 
+        ? JSON.parse(savedWordsToLearn) 
+        : words)
+      setLearnedWords(savedLearnedWords ? JSON.parse(savedLearnedWords) : [])
+    }
+
     audioRef.current = new Audio()
 
     return () => {
