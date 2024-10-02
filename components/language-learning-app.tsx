@@ -73,24 +73,41 @@ export function LanguageLearningAppComponent() {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language === 'en' ? 'en-US' : 'ru-RU';
       
-      if (language === 'en') {
+      const voicesLoaded = () => {
         const voices = window.speechSynthesis.getVoices();
-        const femaleEnglishVoice = voices.find(voice => 
-          voice.lang.startsWith('en') && voice.name.includes('Female')
-        );
-        if (femaleEnglishVoice) {
-          utterance.voice = femaleEnglishVoice; 
+        if (language === 'en') {
+          const femaleEnglishVoice = voices.find(voice => 
+            voice.lang.startsWith('en') && voice.name.includes('Female')
+          );
+          if (femaleEnglishVoice) {
+            utterance.voice = femaleEnglishVoice; 
+          }
         }
+        utterance.onend = resolve;
+        speechSynthesis.speak(utterance);
+      };
+
+      if (speechSynthesis.getVoices().length > 0) {
+        voicesLoaded();
+      } else {
+        speechSynthesis.onvoiceschanged = voicesLoaded;
       }
-      
-      utterance.onend = resolve;
-      speechSynthesis.speak(utterance);
     });
   };
 
   const playWords = async () => {
     setIsPlaying(true)
     stopPlayingRef.current = false
+
+    // Ensure voices are loaded before starting
+    await new Promise<void>((resolve) => {
+      if (speechSynthesis.getVoices().length > 0) {
+        resolve();
+      } else {
+        speechSynthesis.onvoiceschanged = () => resolve();
+      }
+    });
+
     for (let wordIndex = 0; wordIndex < wordsToLearn.length; wordIndex++) {
       if (stopPlayingRef.current) break;
       setCurrentWordIndex(wordIndex);
