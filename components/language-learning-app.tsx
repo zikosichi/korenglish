@@ -9,7 +9,7 @@ import { words } from './wordData'
 type Word = {
   id: number;
   english: string;
-  georgian: string;
+  russian: string;
 }
 
 export function LanguageLearningAppComponent() {
@@ -45,40 +45,29 @@ export function LanguageLearningAppComponent() {
     }
   }, [wordsToLearn, learnedWords])
 
-  const playAudio = (language: string, id: number, text: string) => {
-    return new Promise<void>((resolve) => {
-      if (language === 'en') {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.onend = () => resolve();
-        window.speechSynthesis.speak(utterance);
-      } else if (audioRef.current) {
-        audioRef.current.src = `/audio/${language}/${id}.mp3`
-        audioRef.current.onended = () => resolve()
-        audioRef.current.play().catch(() => resolve())
-      } else {
-        resolve()
-      }
-    })
-  }
+  const playAudio = (text: string, language: string) => {
+    return new Promise((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'en' ? 'en-US' : 'ru-RU';
+      utterance.onend = resolve;
+      speechSynthesis.speak(utterance);
+    });
+  };
 
   const playWords = async () => {
     setIsPlaying(true)
     stopPlayingRef.current = false
-    while (!stopPlayingRef.current && wordsToLearn.length > 0) {
-      for (let i = 0; i < Math.min(10, wordsToLearn.length); i++) {
-        if (stopPlayingRef.current) break
-        const wordIndex = (currentWordIndex + i) % wordsToLearn.length
-        setCurrentWordIndex(wordIndex)
-        await playAudio('en', wordsToLearn[wordIndex].id, wordsToLearn[wordIndex].english)
-        if (stopPlayingRef.current) break
-        await new Promise(resolve => setTimeout(resolve, 500))
-        if (stopPlayingRef.current) break
-        await playAudio('ka', wordsToLearn[wordIndex].id, wordsToLearn[wordIndex].georgian)
-        if (stopPlayingRef.current) break
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      }
-      setCurrentWordIndex((prevIndex) => (prevIndex + 10) % wordsToLearn.length)
+    for (let wordIndex = 0; wordIndex < wordsToLearn.length; wordIndex++) {
+      if (stopPlayingRef.current) break;
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (stopPlayingRef.current) break;
+      await playAudio(wordsToLearn[wordIndex].english, 'en');
+      if (stopPlayingRef.current) break;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (stopPlayingRef.current) break;
+      await playAudio(wordsToLearn[wordIndex].russian, 'ru');
+      if (stopPlayingRef.current) break;
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     setIsPlaying(false)
   }
@@ -153,7 +142,7 @@ export function LanguageLearningAppComponent() {
                   </Button>
                   -
                   <Button className='p-2'variant="ghost" onClick={() => playIndividualWord(word.id, 'ka')}>
-                    {word.georgian}
+                    {word.russian}
                   </Button>
                   <div className="flex items-center space-x-2 ml-auto">
                     <Button variant="outline" onClick={() => markAsLearned(word.id)}>
@@ -169,7 +158,7 @@ export function LanguageLearningAppComponent() {
             <ul className="space-y-2">
               {learnedWords.map((word) => (
                 <li key={word.id} className="flex justify-between items-center p-2">
-                  <span>{word.english} - {word.georgian}</span>
+                  <span>{word.english} - {word.russian}</span>
                   <div className="flex items-center space-x-2">
                     <Button size="icon" variant="ghost" onClick={() => playIndividualWord(word.id, 'en')}>
                       <VolumeIcon className="w-4 h-4 text-blue-500" />
