@@ -83,6 +83,12 @@ export function LanguageLearningAppComponent() {
             utterance.voice = femaleEnglishVoice; 
           }
         }
+
+        if (language === 'ru') {
+          const russianVoices = voices.filter(voice => voice.lang.startsWith('ru'));
+          utterance.voice = russianVoices[1];
+        }
+
         utterance.onend = resolve;
         speechSynthesis.speak(utterance);
       };
